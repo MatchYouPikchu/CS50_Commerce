@@ -6,6 +6,7 @@ body {
     background-color: #f44336; /* Red */
     color: white;
     margin-bottom: 15px;
+    font:10px;
 }
 label{
     display:block;
