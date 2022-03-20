@@ -5,12 +5,17 @@ from django.shortcuts import render
 from django.urls import reverse
 from django import forms
 from auctions.forms import formListing 
+from PIL import Image
+import requests
 
 from .models import User, Listing
 
 
 def index(request):
+    user = request.user
+    print(f'this is user id {user.id}{user.last_login}')
     return render(request, "auctions/index.html")
+    
 
 
 def login_view(request):
@@ -66,18 +71,25 @@ def register(request):
     
 
 def createListing(request):
+    if not request.user.is_authenticated:
+        return HttpResponseRedirect(reverse("login"))
     if request.method == 'POST':
         form = (formListing(request.POST))
         if form.is_valid():
             f = Listing(
             title = form.cleaned_data["title"],
             description = form.cleaned_data["description"],
-            startingBid= form.cleaned_data["startingBid"],
-            imageLink= form.cleaned_data["imageLink"],
-            category = form.cleaned_data["category"]
+            startingBid = form.cleaned_data["startingBid"],
+            imageLink = form.cleaned_data["imageLink"],
+            category = form.cleaned_data["category"],
+            userId = User.objects.filter(id =request.user.id).first()
+        
             )
             f.save()
+
+            
             return HttpResponseRedirect(reverse("index"))
+            
         else :
             # return HttpResponse("Sorry there's a problem with you form")
             return render (request, 'auctions/createListing.html', {
@@ -88,4 +100,3 @@ def createListing(request):
         return render (request, "auctions/createListing.html", {
             "form" : formListing()
         }) 
-
