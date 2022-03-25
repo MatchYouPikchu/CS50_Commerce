@@ -13,7 +13,6 @@ from .models import User, Listing
 
 def index(request):
     user = request.user
-    print(f'this is user id {user.id}{user.last_login}')
     return render(request, "auctions/index.html")
     
 
@@ -74,18 +73,20 @@ def createListing(request):
     if not request.user.is_authenticated:
         return HttpResponseRedirect(reverse("login"))
     if request.method == 'POST':
-        form = (formListing(request.POST))
+        form = (formListing(request.POST, request.FILES))
         if form.is_valid():
+            
             f = Listing(
             title = form.cleaned_data["title"],
             description = form.cleaned_data["description"],
             startingBid = form.cleaned_data["startingBid"],
             imageLink = form.cleaned_data["imageLink"],
             category = form.cleaned_data["category"],
-            userId = User.objects.filter(id =request.user.id).first()
+            user = User.objects.filter(id =request.user.id).first()
         
             )
             f.save()
+            print(f)
 
             
             return HttpResponseRedirect(reverse("index"))
