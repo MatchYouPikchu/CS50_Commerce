@@ -13,7 +13,9 @@ from .models import User, Listing
 
 def index(request):
     user = request.user
-    return render(request, "auctions/index.html")
+    return render(request, "auctions/index.html", {
+        "listings" : Listing.objects.filter(user_id =request.user.id)
+    })
     
 
 
