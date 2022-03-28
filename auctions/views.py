@@ -7,7 +7,6 @@ from django import forms
 from auctions.forms import formListing 
 from PIL import Image
 import requests
-
 from .models import User, Listing
 
 
@@ -17,7 +16,6 @@ def index(request):
         "listings" : Listing.objects.filter(user_id =request.user.id)
     })
     
-
 
 def login_view(request):
     if request.method == "POST":
@@ -103,3 +101,7 @@ def createListing(request):
         return render (request, "auctions/createListing.html", {
             "form" : formListing()
         }) 
+
+def displayListing(request, listingId):
+    print(f'This is id{id}')
+    return HttpResponse("Ok")
