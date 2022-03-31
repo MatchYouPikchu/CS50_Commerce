@@ -1,6 +1,6 @@
 from django.contrib.auth import authenticate, login, logout
 from django.db import IntegrityError
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseForbidden, HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse
 from django import forms
@@ -13,7 +13,7 @@ from .models import User, Listing
 def index(request):
     user = request.user
     return render(request, "auctions/index.html", {
-        "listings" : Listing.objects.filter(user_id =request.user.id)
+        "listings" : Listing.objects.all()
     })
     
 
@@ -103,5 +103,10 @@ def createListing(request):
         }) 
 
 def displayListing(request, listingId):
-    print(f'This is id{id}')
-    return HttpResponse("Ok")
+    if request.user.is_authenticated():
+        return render (request, "auctions/displayListing.html", {
+        "listing": Listing.objects.filter(id=listingId)
+        })
+    else:
+        print ("Not logged")
+        return HttpResponseForbidden
