@@ -6,8 +6,8 @@ from django.urls import reverse
 from django import forms
 from auctions.forms import formListing 
 from PIL import Image
-import requests
-from .models import User, Listing
+import requests, json
+from .models import User, Listing, Watchlist
 
 
 def index(request):
@@ -103,10 +103,27 @@ def createListing(request):
         }) 
 
 def displayListing(request, listingId):
-    if request.user.is_authenticated():
+    if request.user.is_authenticated:
+        query = Watchlist.objects.filter(listing_id=listingId, user=request.user.id)
+        if query.first():
+             watchlistFlag = True
+        else:
+            watchlistFlag = False   
+        
         return render (request, "auctions/displayListing.html", {
-        "listing": Listing.objects.filter(id=listingId)
+        "listing": Listing.objects.filter(id=listingId),
+        "watchlistFlag": watchlistFlag
         })
     else:
         print ("Not logged")
-        return HttpResponseForbidden
+        return HttpResponse("Apologies, log in")
+
+def addItemToWatchlist(request):
+    if request.method == 'POST':
+        f = Watchlist(
+        listing = Listing.objects.filter(id = json.loads(request.body)).first(),
+        user = request.user
+        )
+        f.save()
+    return HttpResponse("Ok")
+
