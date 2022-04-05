@@ -127,3 +127,13 @@ def addItemToWatchlist(request):
         f.save()
     return HttpResponse("Ok")
 
+
+def removeItemFromWatchlist(request):
+    if request.method == 'POST':
+       f = Watchlist.objects.get(
+       listing = Listing.objects.get(id = json.loads(request.body)),
+       user = request.user
+       )
+       f.delete() 
+    return HttpResponse("Ok")
+
