@@ -6,3 +6,6 @@ class formListing(forms.Form):
     startingBid = forms.DecimalField(label="Starting bid", max_digits=2)
     imageLink = forms.ImageField(label='Image URL', required=False)
     category = forms.CharField(label='Category', max_length=40)
+
+class formBid(forms.Form):
+    bid = forms.DecimalField(label='Actual bid', max_digits=2)

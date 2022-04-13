@@ -1,4 +1,5 @@
 from email.policy import default
+from tkinter import CASCADE
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 
@@ -24,8 +25,18 @@ class Watchlist(models.Model):
     class Meta:
         unique_together = ['user', 'listing']
 
-def __str__(self):
-    return self.user + self.listing
+    def __str__(self):
+       return "%s %s"  % (self.user, self.listing)
+
+class bids (models.Model):
+    value = models.DecimalField(max_digits=5, decimal_places=2)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    listing = models.ForeignKey(Listing,on_delete=models.CASCADE)
+
+    def __str__(self):
+        return "%s %s %s" % (self.value, self.user, self.listing)
+
+
  
 
 

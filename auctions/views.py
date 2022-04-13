@@ -1,10 +1,10 @@
 from django.contrib.auth import authenticate, login, logout
 from django.db import IntegrityError
-from django.http import HttpResponse, HttpResponseForbidden, HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseForbidden, HttpResponseRedirect, JsonResponse
 from django.shortcuts import render
 from django.urls import reverse
 from django import forms
-from auctions.forms import formListing 
+from auctions.forms import formBid, formListing
 from PIL import Image
 import requests, json
 from .models import User, Listing, Watchlist
@@ -112,7 +112,8 @@ def displayListing(request, listingId):
         
         return render (request, "auctions/displayListing.html", {
         "listing": Listing.objects.filter(id=listingId),
-        "watchlistFlag": watchlistFlag
+        "watchlistFlag": watchlistFlag,
+        "form": formBid()
         })
     else:
         print ("Not logged")
@@ -121,11 +122,12 @@ def displayListing(request, listingId):
 def addItemToWatchlist(request):
     if request.method == 'POST':
         f = Watchlist(
-        listing = Listing.objects.filter(id = json.loads(request.body)).first(),
+        listing = Listing.objects.get(id = json.loads(request.body)),
         user = request.user
         )
         f.save()
-    return HttpResponse("Ok")
+    return JsonResponse({'Status':'Ok'})
+
 
 
 def removeItemFromWatchlist(request):
@@ -135,5 +137,5 @@ def removeItemFromWatchlist(request):
        user = request.user
        )
        f.delete() 
-    return HttpResponse("Ok")
+    return JsonResponse({'Status':'Ok'})
 
