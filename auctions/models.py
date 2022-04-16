@@ -14,6 +14,7 @@ class Listing(models.Model):
     imageLink = models.ImageField(max_length=100, null=True, blank=True, upload_to='images/', default='media/images/no.jpeg')
     category = models.CharField(max_length=40)
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="user_listings")
+    active = models.BooleanField(default = True)
     # TO DO perhaps enum for categories?
 
     def __str__(self):
@@ -28,7 +29,7 @@ class Watchlist(models.Model):
     def __str__(self):
        return "%s %s"  % (self.user, self.listing)
 
-class bids (models.Model):
+class Bids (models.Model):
     value = models.DecimalField(max_digits=5, decimal_places=2)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     listing = models.ForeignKey(Listing,on_delete=models.CASCADE)

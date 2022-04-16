@@ -7,7 +7,7 @@ from django import forms
 from auctions.forms import formBid, formListing
 from PIL import Image
 import requests, json
-from .models import User, Listing, Watchlist
+from .models import User, Listing, Watchlist, Bids
 
 
 def index(request):
@@ -104,11 +104,21 @@ def createListing(request):
 
 def displayListing(request, listingId):
     if request.user.is_authenticated:
-        query = Watchlist.objects.filter(listing_id=listingId, user=request.user.id)
-        if query.first():
+        queryWatchlist = Watchlist.objects.filter(listing_id=listingId, user=request.user.id)
+        queryIfCreator = Listing.objects.filter(id=listingId).values_list()
+
+        if queryWatchlist.first():
              watchlistFlag = True
         else:
-            watchlistFlag = False   
+            watchlistFlag = False
+
+        print(queryIfCreator)
+    
+        if (queryIfCreator['user_id'] == request.user.id):
+            print("this is creator")
+
+        else:
+            print("this is not creator")
         
         return render (request, "auctions/displayListing.html", {
         "listing": Listing.objects.filter(id=listingId),
@@ -138,4 +148,30 @@ def removeItemFromWatchlist(request):
        )
        f.delete() 
     return JsonResponse({'Status':'Ok'})
+
+def submitBid(request):
+    if request.method == 'POST':
+        data = json.loads(request.body)
+        bidValue = data[1]
+        listingId = data[0]
+
+        if float(bidValue) <= compareBids(listingId):
+            return JsonResponse({"Status": "Sorry, bid higher"})
+        else:
+            f = Bids(
+            listing = Listing.objects.get(id = listingId),
+            value = bidValue,
+            user = request.user
+            )
+            f.save()
+            return JsonResponse({'Status':'Ok'})
+    
+def compareBids(listing):
+    startingBid = Listing.objects.filter(pk=listing).first()
+    highestBid = Bids.objects.filter(listing_id=listing).latest('value')
+    return max(startingBid.startingBid, highestBid.value)
+
+    
+
+
 
