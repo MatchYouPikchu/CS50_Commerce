@@ -9,3 +9,6 @@ class formListing(forms.Form):
 
 class formBid(forms.Form):
     bid = forms.DecimalField(label='User bid', max_digits=2)
+
+class formComment(forms.Form):
+    comment = forms.CharField(label="Comment", max_length=200)

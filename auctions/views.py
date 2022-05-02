@@ -1,13 +1,14 @@
 from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.decorators import login_required
 from django.db import IntegrityError
 from django.http import HttpResponse, HttpResponseForbidden, HttpResponseRedirect, JsonResponse
 from django.shortcuts import render
 from django.urls import reverse
 from django import forms
-from auctions.forms import formBid, formListing
+from auctions.forms import formBid, formListing, formComment
 from PIL import Image
 import requests, json
-from .models import User, Listing, Watchlist, Bids
+from .models import User, Listing, Watchlist, Bids, listingComments
 
 
 def index(request):
@@ -15,7 +16,14 @@ def index(request):
     return render(request, "auctions/index.html", {
         "listings" : Listing.objects.all()
     })
-    
+
+def userWatchlist(request):
+    listingList= Listing.objects.filter(included__pk__in = Watchlist.objects.all().values_list('id',flat=True), user=request.user)
+
+
+    return render(request, "auctions/index.html",{
+        "listings" : listingList
+    })
 
 def login_view(request):
     if request.method == "POST":
@@ -86,13 +94,9 @@ def createListing(request):
         
             )
             f.save()
-            print(f)
-
-            
             return HttpResponseRedirect(reverse("index"))
             
         else :
-            # return HttpResponse("Sorry there's a problem with you form")
             return render (request, 'auctions/createListing.html', {
                 "form" : form
             })
@@ -103,31 +107,36 @@ def createListing(request):
         }) 
 
 def displayListing(request, listingId):
-    if request.user.is_authenticated:
-        queryWatchlist = Watchlist.objects.filter(listing_id=listingId, user=request.user.id)
-        queryIfCreator = Listing.objects.filter(id=listingId).values_list()
+  
+    queryWatchlist = Watchlist.objects.filter(listing_id=listingId, user=request.user.id).first()
+    currentListing = Listing.objects.get(id=listingId)
+    comments = listingComments.objects.filter(listing_id=listingId)
+ 
+    if currentListing.active == False:
+        try:
+            winnerFlag = Bids.objects.filter(listing_id=listingId).latest('value')
+        except:
+            winnerFlag = "None"
+        return render (request, "auctions/closedListing.html",{
+            "winnerFlag" : winnerFlag
+        })
+    else:
 
-        if queryWatchlist.first():
-             watchlistFlag = True
+        if queryWatchlist:
+            watchlistFlag = True
         else:
             watchlistFlag = False
-
-        print(queryIfCreator)
     
-        if (queryIfCreator['user_id'] == request.user.id):
-            print("this is creator")
-
-        else:
-            print("this is not creator")
         
         return render (request, "auctions/displayListing.html", {
         "listing": Listing.objects.filter(id=listingId),
         "watchlistFlag": watchlistFlag,
-        "form": formBid()
+        'creatorFlag' : currentListing.isAuthor(request.user),
+        "formBid": formBid(),
+        "formComment" : formComment(),
+        "comments" : comments
         })
-    else:
-        print ("Not logged")
-        return HttpResponse("Apologies, log in")
+
 
 def addItemToWatchlist(request):
     if request.method == 'POST':
@@ -137,7 +146,6 @@ def addItemToWatchlist(request):
         )
         f.save()
     return JsonResponse({'Status':'Ok'})
-
 
 
 def removeItemFromWatchlist(request):
@@ -171,7 +179,34 @@ def compareBids(listing):
     highestBid = Bids.objects.filter(listing_id=listing).latest('value')
     return max(startingBid.startingBid, highestBid.value)
 
-    
+def closeListing(request):
+    if request.method =="POST":
+        Listing.objects.filter(id = json.loads(request.body)).update(active=False)
+        return JsonResponse({'Status':'Ok'})
+
+def submitComment(request):
+    if request.method == "POST":
+        data = json.loads(request.body)
+        commentValue = data[1]
+        listingId = data[0]
+        f = listingComments(
+           listing = Listing.objects.get(id = listingId),
+            comment = commentValue,
+            user = request.user
+            )
+        f.save()
+        return JsonResponse ({"Status" : "ok"})
+
+def categories(request):
+    if request.method == "POST":
+        return render(request,"auctions/index.html", {
+            "listings": Listing.objects.filter(category=request.POST['category'])
+        } )
+    else:
+        return render(request, "auctions/categories.html", {
+        "categories": Listing.objects.filter(active = True).values_list('category', flat=True)
+        })
+   
 
 
 
