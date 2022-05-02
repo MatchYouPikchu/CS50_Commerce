@@ -2,6 +2,22 @@
 
 {% block body %}
     <h2>Active Listings</h2>
+<table>
+    {% for listing in listings %}
+<tr>
+<td>
+    <a href ="{% url 'displayListing' listing.id %}">Redirect</a>
 
-    TODO
+    {{listing.title}} 
+        
+    {% if listing.imageLink %}
+       
+      <img src = "{{ listing.imageLink.url }}" height=192 width=168 alt="no image"/>  
+    {% else %}
+      <img src = "/media/images/no.jpeg" height=192 width=168 alt="no image"/>  
+    {% endif %}
+</td>
+</tr>
+{% endfor %}
+</table>
 {% endblock %}
