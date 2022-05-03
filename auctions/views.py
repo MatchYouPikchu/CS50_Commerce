@@ -14,7 +14,7 @@ from .models import User, Listing, Watchlist, Bids, listingComments
 def index(request):
     user = request.user
     return render(request, "auctions/index.html", {
-        "listings" : Listing.objects.all()
+        "listings" : Listing.objects.filter(active=True)
     })
 
 def userWatchlist(request):
@@ -176,8 +176,12 @@ def submitBid(request):
     
 def compareBids(listing):
     startingBid = Listing.objects.filter(pk=listing).first()
-    highestBid = Bids.objects.filter(listing_id=listing).latest('value')
+    try:
+        highestBid = Bids.objects.filter(listing_id=listing).latest('value')
+    except:
+        return 0
     return max(startingBid.startingBid, highestBid.value)
+   
 
 def closeListing(request):
     if request.method =="POST":

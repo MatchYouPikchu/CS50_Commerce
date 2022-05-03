@@ -22,3 +22,77 @@ label{
     font-family: inherit;
     font-size: inherit;
 }
+.flex{
+    display:flex;
+    justify-content: flex-start;
+    align-items: top;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    max-width: 90%;
+}
+ul{
+    list-style-type: none;
+}
+
+ul[title]::before {
+    content: attr(title);
+    font-size: x-large;
+    display: block;
+    color:blue;
+    padding: 2px;
+}
+
+li{
+    font-size: large;
+    padding-top: 5px;
+    padding-left: 2px;
+}
+
+textarea {
+    height: fit-content;
+    max-height: 40px;
+    resize:none;
+    max-width: 250px;
+    width:fit-content;
+}
+
+.comments{
+    margin-top: 10px;
+    display: inline-block;
+    align-items: center;
+}
+
+input{
+    margin-bottom: 4px;
+}
+.forlisting{
+    max-width: 1000px;
+}
+
+.listingTable {
+    border: solid 1px #DDEEEE;
+    border-collapse: collapse;
+    border-spacing: 0;
+    font: normal 13px Arial, sans-serif;
+  
+}
+.listingTable thead th {
+    background-color: #2808dc;
+    border: 1px #a1a6bd;
+    color:white;
+    padding: 10px;
+    text-align: center;
+    
+}
+.listingTable tbody td {
+    border: 1px #7a878a;
+    color: #333;
+    padding: 3px;
+    font-size: large;
+}
+
+.listingColumn{
+    width: 200px;
+    text-align: center;
+    padding: 10px;
+}

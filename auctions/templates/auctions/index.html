@@ -1,23 +1,35 @@
 {% extends "auctions/layout.html" %}
 
 {% block body %}
-    <h2>Active Listings</h2>
-<table>
+<div class = "forlisting">
+<table class="listingTable">
+  <thead>
+    <th colspan="2">Active Listings</th>
+  </thead>
     {% for listing in listings %}
-<tr>
-<td>
-    <a href ="{% url 'displayListing' listing.id %}">Redirect</a>
+    <tbody>
 
-    {{listing.title}} 
-        
+<tr>
+  <td>
     {% if listing.imageLink %}
-       
-      <img src = "{{ listing.imageLink.url }}" height=192 width=168 alt="no image"/>  
-    {% else %}
-      <img src = "/media/images/no.jpeg" height=192 width=168 alt="no image"/>  
-    {% endif %}
-</td>
+      <img src = "{{ listing.imageLink.url }}" min-width=100px  max-width=250px height=272px  alt="image"/>  
+  {% else %}
+      <img src = "/media/images/no.jpeg" min-width="100px" max-width="250px" height=272px  alt="no image"/>  
+  {% endif %}
+  </td>
+
+  <td>
+  <div class ="listingColumn">
+  {{ listing.title }}
+  <br>
+  {{ listing.description }} 
+  <br>
+    <a href ="{% url 'displayListing' listing.id %}" class="btn btn-primary">Redirect</a>
+  </td>
+</div>
 </tr>
 {% endfor %}
+</tbody>
 </table>
+</div>
 {% endblock %}
