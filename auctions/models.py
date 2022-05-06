@@ -34,7 +34,7 @@ class Watchlist(models.Model):
     listing = models.ForeignKey(Listing,related_name='included', on_delete=models.CASCADE)
     class Meta:
         unique_together = ['user', 'listing']
-    
+
 
     def __str__(self):
        return "%s %s"  % (self.user, self.listing)

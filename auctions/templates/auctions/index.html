@@ -6,16 +6,20 @@
   <thead>
     <th colspan="2">Active Listings</th>
   </thead>
+
     {% for listing in listings %}
     <tbody>
 
 <tr>
   <td>
+    <div style="width:75%">
+  
     {% if listing.imageLink %}
-      <img src = "{{ listing.imageLink.url }}" min-width=100px  max-width=250px height=272px  alt="image"/>  
+      <img src = "{{ listing.imageLink.url }}"   alt="image"/>  
   {% else %}
-      <img src = "/media/images/no.jpeg" min-width="100px" max-width="250px" height=272px  alt="no image"/>  
+      <img src = "/media/images/no.jpeg"  alt="no image"/>  
   {% endif %}
+</div>
   </td>
 
   <td>
@@ -23,6 +27,8 @@
   {{ listing.title }}
   <br>
   {{ listing.description }} 
+  <br>
+  {{ listing.startingBid }}$
   <br>
     <a href ="{% url 'displayListing' listing.id %}" class="btn btn-primary">Redirect</a>
   </td>

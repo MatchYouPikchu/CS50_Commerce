@@ -83,7 +83,6 @@ def createListing(request):
     if request.method == 'POST':
         form = (formListing(request.POST, request.FILES))
         if form.is_valid():
-            
             f = Listing(
             title = form.cleaned_data["title"],
             description = form.cleaned_data["description"],
@@ -110,7 +109,7 @@ def displayListing(request, listingId):
   
     queryWatchlist = Watchlist.objects.filter(listing_id=listingId, user=request.user.id).first()
     currentListing = Listing.objects.get(id=listingId)
-    comments = listingComments.objects.filter(listing_id=listingId)
+    
  
     if currentListing.active == False:
         try:
@@ -134,7 +133,7 @@ def displayListing(request, listingId):
         'creatorFlag' : currentListing.isAuthor(request.user),
         "formBid": formBid(),
         "formComment" : formComment(),
-        "comments" : comments
+        "comments" : listingComments.objects.filter(listing_id=listingId)
         })
 
 
