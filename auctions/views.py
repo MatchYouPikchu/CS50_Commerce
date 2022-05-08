@@ -107,29 +107,21 @@ def createListing(request):
 
 def displayListing(request, listingId):
   
-    queryWatchlist = Watchlist.objects.filter(listing_id=listingId, user=request.user.id).first()
     currentListing = Listing.objects.get(id=listingId)
     
  
     if currentListing.active == False:
         try:
-            winnerFlag = Bids.objects.filter(listing_id=listingId).latest('value')
+            winnerFlag = Bids.objects.filter(listing_id=listingId).latest('value').isWinner(user=request.user)
         except:
             winnerFlag = "None"
         return render (request, "auctions/closedListing.html",{
             "winnerFlag" : winnerFlag
         })
-    else:
-
-        if queryWatchlist:
-            watchlistFlag = True
-        else:
-            watchlistFlag = False
-    
-        
+    else:  
         return render (request, "auctions/displayListing.html", {
         "listing": Listing.objects.filter(id=listingId),
-        "watchlistFlag": watchlistFlag,
+        "watchlistFlag": Watchlist.objects.filter(listing_id=listingId, user=request.user.id).exists(),
         'creatorFlag' : currentListing.isAuthor(request.user),
         "formBid": formBid(),
         "formComment" : formComment(),

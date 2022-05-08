@@ -1,0 +1,12 @@
+{% extends "auctions/layout.html" %}
+
+{% block body %}
+{% if winnerFlag == "None" %}
+No winner for this bid!
+{% elif winnerFlag %}
+Listing is closed, you're the winner
+{% else %}
+Listing is closed, but you're not the winner
+
+{% endif %}
+{% endblock %}

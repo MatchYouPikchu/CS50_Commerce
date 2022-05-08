@@ -45,8 +45,6 @@ class Bids (models.Model):
     listing = models.ForeignKey(Listing,on_delete=models.CASCADE)
 
     def isWinner(self, user):
-        print(self)
-        print(user)
         if self.user == user :
             return True
         else:

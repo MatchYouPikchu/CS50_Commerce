@@ -1,0 +1,73 @@
+{% extends "auctions/layout.html" %}
+
+{% block body %}
+
+{% if watchlistFlag%}
+   <input type ="button" class="btn btn-primary btn-sm active" id ='watchListRemove' onclick = "removeWatchList()" name="watchListRemove" value = "Watched">
+   <input type ="button" class="btn btn-secondary btn-sm" hidden id ='watchListAdd' onclick = "addToWatchlist()" name="watchListAdd" value = "Not watched">
+   {% else %}
+   <input type ="button" class="btn btn-secondary btn-sm" id ='watchListAdd' onclick = "addToWatchlist()" name="watchListAdd" value = "Not watched">
+   <input type ="button" class="btn btn-primary btn-sm active" hidden id ='watchListRemove' onclick = "removeWatchList()" name="watchListRemove" value = "Watched">
+{% endif %}
+
+{% if creatorFlag %}
+ <input type ="button" class="btn btn-warning btn-sm" id ='closeListing' name="closeListing" value="Close listing">
+{% endif %}
+
+{% for result in listing %}
+<h2> {{ result.title }} </h2>
+
+<div class="flex">
+
+{% if result.imageLink %}
+   <img src = "{{ result.imageLink.url }}"  alt="image"/>  
+{% else %}
+   <img src = "/media/images/no.jpeg" min-width="100px" max-width="200px" height=272px width=20% alt="no image"/>  
+{% endif %}
+
+<div class ='listingProperties'>
+<ul title="Listing details">
+<li> {{ result.startingBid }} &dollar; </li>
+
+<li> {{ result.description }}</li>
+ <li>  {{ result.category }} </li>
+</ul>
+</div>
+
+</div>
+<input type ="button" id ='watchListBtn'value = {{result.id}} hidden>
+{% csrf_token %}
+<br>
+
+
+{% endfor %}
+
+{% if user.is_authenticated %}
+
+{{ formBid }}
+<br>
+<input type="button" class="btn btn-primary" id ='submitBid' value="submit bid">
+<br>
+
+{{ formComment }}
+<br>
+ <input type ="submit" class="btn btn-primary" id ='submitComment'value ="submit comment">
+
+ {% else %}
+   <br>
+   <h4 style="color:blue;"> comments, bids, watchlist - sign in!</h4>
+ {% endif %}
+<hr> 
+ <div>
+
+ {% for result in comments %}
+    {{ result.comment }}
+    <hr>
+ {% endfor %}
+</div>
+
+
+
+
+
+{% endblock %} 
